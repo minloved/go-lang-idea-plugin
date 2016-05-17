@@ -26,6 +26,7 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.tree.TokenSet;
 import com.intellij.lang.PsiParser;
 import com.intellij.lang.LightPsiParser;
+import static com.intellij.lang.WhitespacesBinders.*;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
 public class GoParser implements PsiParser, LightPsiParser {
@@ -2091,13 +2092,14 @@ public class GoParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (ImportDeclaration semi)+|<<emptyImportList>>
+  // (ImportDeclaration semi)+ | ()
   public static boolean ImportList(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ImportList")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, IMPORT_LIST, "<import list>");
     r = ImportList_0(b, l + 1);
-    if (!r) r = emptyImportList(b, l + 1);
+    if (!r) r = ImportList_1(b, l + 1);
+    register_hook_(b, l, LEFT_BINDER, GREEDY_LEFT_BINDER);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -2128,6 +2130,11 @@ public class GoParser implements PsiParser, LightPsiParser {
     r = r && semi(b, l + 1);
     exit_section_(b, l, m, r, p, null);
     return r || p;
+  }
+
+  // ()
+  private static boolean ImportList_1(PsiBuilder b, int l) {
+    return true;
   }
 
   /* ********************************************************** */

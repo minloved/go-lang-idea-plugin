@@ -89,11 +89,13 @@
   pin('.*List(?:_\d.*)?')=1
 
   generateTokenAccessors=true
+  parserImports=["static com.intellij.lang.WhitespacesBinders.*"]
 }
 
 File ::= PackageClause semi ImportList TopLevelDeclaration* {pin(".*")=1}
-ImportList ::= (ImportDeclaration semi)+|<<emptyImportList>> {
+ImportList ::= (ImportDeclaration semi)+ | () {
   methods=[addImport]
+  hooks=[leftBinder="GREEDY_LEFT_BINDER"]
 }
 private semi ::= '<NL>' | ';' | <<eof>>
 
